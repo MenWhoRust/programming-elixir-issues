@@ -13,10 +13,10 @@ defmodule Issues.Cli do
 
   @doc """
   `argv` can be -h or --help, which returns :help
-
+  
   Otherwise it is a github user name, project name, and (optionally)
   the number of entries to format.
-
+  
   Return a tuple of `{user, project, count}`, or `:help` if help was given.
   """
   def parse_args(argv) do
@@ -50,5 +50,13 @@ defmodule Issues.Cli do
 
   def process({user, project, _count}) do
     Issues.GithubIssues.fetch(user, project)
+    |> decode_response()
+  end
+
+  def decode_response({:ok, body}), do: body
+
+  def decode_response({:error, error}) do
+    IO.puts("Error fetching from Github: #{error["message"]}")
+    System.halt(2)
   end
 end
