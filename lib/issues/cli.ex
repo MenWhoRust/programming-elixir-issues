@@ -1,4 +1,5 @@
 defmodule Issues.Cli do
+  import Issues.TableFormatter, only: [print_table_for_columns: 2]
   @default_count 4
 
   @moduledoc """
@@ -6,9 +7,10 @@ defmodule Issues.Cli do
   the various functions that end up generating a
   table of the last _n_ issues in a github project
   """
-  def run(argv) do
+  def main(argv) do
     argv
     |> parse_args()
+    |> process()
   end
 
   @doc """
@@ -53,6 +55,7 @@ defmodule Issues.Cli do
     |> decode_response()
     |> sort_into_descending_order()
     |> last(count)
+    |> print_table_for_columns(["number", "created_at", "title"])
   end
 
   def last(list, count) do
